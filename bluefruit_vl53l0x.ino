@@ -8,14 +8,13 @@
  The range readings are in units of mm. */
 
 /** ***********************************************************
- * Based on Pololu VL53L0X arduino library Single example which 
+ * Based on Pololu VL53L0X arduino library Single example which
  * can set measurment modes: LONG RANGE, HIGH SPEED and HIGH ACCURACY
- * Inlcuded Adafruit SSD1306 bluefruit libraries to display the 
+ * Added Adafruit SSD1306 and bluefruit libraries to display the 
  * measurement and send it through Bluefruit uart (over BLE).
- * 
+ *
  * Modified by Lei Shi
- * Tested on Adafruit Feather nRF52 Bluefruit LE with 
- * Adafruit VL53L0X Time of Flight Distance Sensor
+ * Tested on Adafruit Feather nRF52 Bluefruit LE with Adafruit VL53L0X
  */
 
 #include <Wire.h>
@@ -71,14 +70,14 @@ void setup()
   // Note: This is actually the default behaviour, but provided
   // here in case you want to control this LED manually via PIN 19
   Bluefruit.autoConnLed(true);
-  
+
   Bluefruit.begin();
   Bluefruit.setTxPower(4);    // Check bluefruit.h for supported values
   Bluefruit.setName("Bluefruit52");
 
 //  Bluefruit.Periph.setConnectCallback(connect_callback);
 //  Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
-  
+
   // To be consistent OTA DFU should be added first if it exists
   bledfu.begin();
 
@@ -93,16 +92,16 @@ void setup()
   // Start BLE Battery Service
 //  blebas.begin();
 //  blebas.write(100);
-        
+
   // Set up and start advertising
   startAdv();
 
-    
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
   // init done
   display.display();
   delay(1000);
-  
+
   Wire.begin();
 
   sensor.init();
@@ -136,7 +135,7 @@ void startAdv(void)
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
   Bluefruit.Advertising.addTxPower();
-  
+
   // Include the BLE UART (AKA 'NUS') 128-bit UUID
   Bluefruit.Advertising.addService(bleuart);
 
@@ -149,14 +148,14 @@ void startAdv(void)
    * - Interval:  fast mode = 20 ms, slow mode = 152.5 ms
    * - Timeout for fast mode is 30 seconds
    * - Start(timeout) with timeout = 0 will advertise forever (until connected)
-   * 
+   *
    * For recommended advertising interval
-   * https://developer.apple.com/library/content/qa/qa1931/_index.html   
+   * https://developer.apple.com/library/content/qa/qa1931/_index.html
    */
   Bluefruit.Advertising.restartOnDisconnect(true);
   Bluefruit.Advertising.setInterval(32, 244);    // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(30);      // number of seconds in fast mode
-  Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds  
+  Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds
 }
 
 bool toggle_run = false;
@@ -181,7 +180,7 @@ uint8_t packetbuffer[READ_BUFSIZE+1];
     @brief  Waits for incoming data and parses it
 */
 /**************************************************************************/
-uint8_t readPacket(BLEUart *ble_uart, uint16_t timeout) 
+uint8_t readPacket(BLEUart *ble_uart, uint16_t timeout)
 {
   uint16_t origtimeout = timeout, replyidx = 0;
 
@@ -213,11 +212,11 @@ uint8_t readPacket(BLEUart *ble_uart, uint16_t timeout)
       replyidx++;
       timeout = origtimeout;
     }
-    
+
     if (timeout == 0) break;
     delay(1);
   }
-  
+
   return replyidx;
 }
 
@@ -227,26 +226,26 @@ void loop()
   if (len != 0) {
     toggle_run = !toggle_run;
   }
-  
+
   if (toggle_run) {
     int dist = sensor.readRangeSingleMillimeters();
 
     char buf[64];
 //    itoa(dist, buf, 10);
     int n = sprintf(buf, "%d\n", (dist));
-    bleuart.write( buf, n ); 
+    bleuart.write( buf, n );
     Serial.print(buf);
-    
+
     display.clearDisplay();
     display.setCursor(0,0);
     display.print(dist);
     display.print("mm");
     display.display();
 
-    delay(100); 
+    delay(100);
   }
 
-   
+
 //  Serial.print(sensor.readRangeSingleMillimeters());
 //  if (sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
 
