@@ -7,6 +7,17 @@
 
  The range readings are in units of mm. */
 
+/** ***********************************************************
+ * Based on Pololu VL53L0X arduino library Single example which 
+ * can set measurment modes: LONG RANGE, HIGH SPEED and HIGH ACCURACY
+ * Inlcuded Adafruit SSD1306 bluefruit libraries to display the 
+ * measurement and send it through Bluefruit uart (over BLE).
+ * 
+ * Modified by Lei Shi
+ * Tested on Adafruit Feather nRF52 Bluefruit LE with 
+ * Adafruit VL53L0X Time of Flight Distance Sensor
+ */
+
 #include <Wire.h>
 #include <VL53L0X.h>
 #include <SPI.h>
